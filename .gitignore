@@ -1,4 +1,12 @@
 node_modules/
 .env
 .DS_Store
+
+Frontend/node_modules/
+Backend/node_modules/
+
+dist/
+build/node_modules/
+.env
+.DS_Store
 dist/
