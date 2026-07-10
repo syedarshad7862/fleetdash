@@ -1,121 +1,97 @@
-import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   Map,
-  Truck,
   Bell,
-  BarChart3
+  Settings,
+  CircleHelp,
+  FileText,
 } from "lucide-react";
 
+const menu = [
+  {
+    title: "Dashboard",
+    icon: <LayoutDashboard size={20} />,
+  },
+  {
+    title: "Live Map",
+    icon: <Map size={20} />,
+  },
+  {
+    title: "Alerts",
+    icon: <Bell size={20} />,
+  },
+  {
+    title: "Settings",
+    icon: <Settings size={20} />,
+  },
+];
 
-const Sidebar = () => {
-
-  const menu = [
-    {
-      name: "Dashboard",
-      icon: <LayoutDashboard size={20}/>,
-      path: "/dashboard"
-    },
-
-    {
-      name: "Live Tracking",
-      icon: <Map size={20}/>,
-      path: "/tracking"
-    },
-
-    {
-      name: "Vehicles",
-      icon: <Truck size={20}/>,
-      path: "/vehicles"
-    },
-
-    {
-      name: "Alerts",
-      icon: <Bell size={20}/>,
-      path: "/alerts"
-    },
-
-    {
-      name: "Analytics",
-      icon: <BarChart3 size={20}/>,
-      path: "/analytics"
-    }
-  ];
-
-
+export default function Sidebar() {
   return (
+    <aside className="w-60 bg-[#11151d] border-r border-gray-800 flex flex-col justify-between">
 
-    <div
-      style={{
-        width:"260px",
-        background:"#020617",
-        minHeight:"100vh",
-        padding:"20px"
-      }}
-    >
+      <div>
 
+        <div className="p-6 border-b border-gray-800">
 
-      <h2
-        style={{
-          marginBottom:"40px",
-          color:"#38bdf8"
-        }}
-      >
-        🚚 FleetDash
-      </h2>
+          <p className="text-xs uppercase tracking-widest text-gray-500">
+            Menu
+          </p>
 
+          <p className="text-gray-300 mt-2">
+            Telemetry v2.4
+          </p>
 
+        </div>
 
-      {
-        menu.map((item,index)=>(
+        <div className="mt-4">
 
-          <NavLink
+          {menu.map((item, index) => (
 
-            key={index}
+            <button
+              key={index}
+              className={`w-full flex items-center gap-4 px-6 py-4 transition duration-300 ${
+                index === 0
+                  ? "bg-[#1b2230] border-l-4 border-blue-500 text-white"
+                  : "text-gray-400 hover:bg-[#1b2230] hover:text-white"
+              }`}
+            >
+              {item.icon}
 
-            to={item.path}
+              {item.title}
 
-            style={({isActive})=>({
+              {item.title === "Alerts" && (
+                <span className="ml-auto w-2 h-2 rounded-full bg-red-500"></span>
+              )}
 
-              display:"flex",
+            </button>
 
-              gap:"15px",
+          ))}
 
-              alignItems:"center",
+        </div>
 
-              padding:"14px",
+      </div>
 
-              marginBottom:"10px",
+      <div className="border-t border-gray-800 p-6 space-y-5 text-gray-500">
 
-              borderRadius:"12px",
+        <div className="flex items-center gap-3">
 
-              textDecoration:"none",
+          <CircleHelp size={18} />
 
-              color:"white",
+          Support
 
-              background:isActive
-              ? "#2563eb"
-              : "transparent"
+        </div>
 
+        <div className="flex items-center gap-3">
 
-            })}
+          <FileText size={18} />
 
-          >
+          Logs
 
-            {item.icon}
+        </div>
 
-            {item.name}
+      </div>
 
-
-          </NavLink>
-
-        ))
-      }
-
-
-    </div>
-  )
+    </aside>
+  );
 }
-
-
-export default Sidebar;
