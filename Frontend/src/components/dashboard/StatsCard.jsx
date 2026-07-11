@@ -1,101 +1,24 @@
-const StatsCard = ({ title, value, icon }) => {
-
-
+export default function StatsCard({
+  title,
+  value,
+  subtitle,
+  color,
+}) {
   return (
+    <div className="bg-[#171b22] border border-gray-700 rounded-lg p-5">
 
-    <div
+      <p className="uppercase text-xs tracking-widest text-gray-400">
+        {title}
+      </p>
 
-      style={{
+      <h1 className={`text-6xl font-bold mt-3 ${color}`}>
+        {value}
+      </h1>
 
-        background:"#1e293b",
-
-        padding:"25px",
-
-        borderRadius:"18px",
-
-        display:"flex",
-
-        justifyContent:"space-between",
-
-        alignItems:"center",
-
-        boxShadow:
-        "0px 10px 25px rgba(0,0,0,0.3)"
-
-      }}
-
-    >
-
-
-      <div>
-
-        <p
-
-          style={{
-
-            color:"#94a3b8",
-
-            marginBottom:"10px"
-
-          }}
-
-        >
-
-          {title}
-
-        </p>
-
-
-
-        <h2
-
-          style={{
-
-            fontSize:"32px"
-
-          }}
-
-        >
-
-          {value}
-
-        </h2>
-
-
-      </div>
-
-
-
-
-      <div
-
-        style={{
-
-          background:"#2563eb",
-
-          padding:"15px",
-
-          borderRadius:"50%",
-
-          display:"flex",
-
-          color:"white"
-
-        }}
-
-      >
-
-        {icon}
-
-
-      </div>
-
-
+      <p className="text-sm text-gray-400 mt-2">
+        {subtitle}
+      </p>
 
     </div>
-
-  )
+  );
 }
-
-
-export default StatsCard;
