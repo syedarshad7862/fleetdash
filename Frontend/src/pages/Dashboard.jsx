@@ -1,140 +1,62 @@
 import StatsCard from "../components/dashboard/StatsCard";
-import AlertPanel from "../components/dashboard/AlertPanel";
+import LiveStatus from "../components/dashboard/LiveStatus";
 import VehicleTable from "../components/dashboard/VehicleTable";
 import LiveMap from "../components/map/LiveMap";
 
-import {
-  Truck,
-  Activity,
-  WifiOff,
-  AlertTriangle
-} from "lucide-react";
+export default function Dashboard() {
 
+    return (
 
-const Dashboard = () => {
+        <div>
 
+            <div className="grid grid-cols-4 gap-5">
 
-  return (
+                <StatsCard
+                    title="Objects"
+                    value="1250"
+                    subtitle="+12%"
+                    color="text-blue-300"
+                />
 
-    <div>
+                <StatsCard
+                    title="Alerts"
+                    value="18"
+                    subtitle="Critical"
+                    color="text-red-500"
+                />
 
+                <StatsCard
+                    title="Frame Rate"
+                    value="60"
+                    subtitle="FPS"
+                    color="text-green-400"
+                />
 
-      <h1
-        style={{
-          marginBottom:"25px"
-        }}
-      >
-        Fleet Overview 🚚
-      </h1>
+                <StatsCard
+                    title="Latency"
+                    value="4"
+                    subtitle="ms"
+                    color="text-white"
+                />
 
+            </div>
 
-      {/* Stats */}
+            <div className="grid grid-cols-4 gap-6 mt-6">
 
-      <div
+                <div className="col-span-3">
 
-        style={{
+                    <LiveMap />
 
-          display:"grid",
+                </div>
 
-          gridTemplateColumns:
-          "repeat(4,1fr)",
+                <LiveStatus />
 
-          gap:"20px",
+            </div>
 
-          marginBottom:"25px"
+            <VehicleTable />
 
-        }}
+        </div>
 
-      >
+    );
 
-
-        <StatsCard
-
-          title="Total Vehicles"
-
-          value="2500"
-
-          icon={<Truck/>}
-
-        />
-
-
-        <StatsCard
-
-          title="Active"
-
-          value="2200"
-
-          icon={<Activity/>}
-
-        />
-
-
-        <StatsCard
-
-          title="Offline"
-
-          value="300"
-
-          icon={<WifiOff/>}
-
-        />
-
-
-        <StatsCard
-
-          title="Alerts"
-
-          value="15"
-
-          icon={<AlertTriangle/>}
-
-        />
-
-
-      </div>
-
-
-
-
-      {/* Map */}
-
-      <LiveMap />
-
-
-
-
-      <div
-
-        style={{
-
-          display:"grid",
-
-          gridTemplateColumns:"2fr 1fr",
-
-          gap:"20px",
-
-          marginTop:"25px"
-
-        }}
-
-      >
-
-
-        <VehicleTable />
-
-
-        <AlertPanel />
-
-
-      </div>
-
-
-
-    </div>
-
-  )
 }
-
-
-export default Dashboard;

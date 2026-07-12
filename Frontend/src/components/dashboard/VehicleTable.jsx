@@ -1,153 +1,116 @@
-const VehicleTable = () => {
-
-
-  const vehicles = [
-
-    {
-      id:"TN59 AB 1234",
-      driver:"Kannan",
-      location:"Bangalore",
-      speed:"65 km/h",
-      status:"Active"
-    },
-
-    {
-      id:"TN01 XY 5678",
-      driver:"Arun",
-      location:"Chennai",
-      speed:"0 km/h",
-      status:"Stopped"
-    },
-
-    {
-      id:"KA05 MN 9090",
-      driver:"Rahul",
-      location:"Electronic City",
-      speed:"45 km/h",
-      status:"Active"
-    }
-
-  ];
-
-
-
-  return (
-
-    <div
-
-      style={{
-
-        background:"#1e293b",
-
-        padding:"20px",
-
-        borderRadius:"18px"
-
-      }}
-
-    >
-
-
-      <h2>
-        🚚 Vehicle Status
-      </h2>
-
-
-      <table
-
-        style={{
-
-          width:"100%",
-
-          marginTop:"20px",
-
-          borderCollapse:"collapse"
-
-        }}
-
-      >
-
-        <thead>
-
-          <tr>
-
-            <th>Vehicle</th>
-
-            <th>Driver</th>
-
-            <th>Location</th>
-
-            <th>Speed</th>
-
-            <th>Status</th>
-
-          </tr>
-
-        </thead>
-
-
-
-        <tbody>
-
-
-          {
-
-            vehicles.map((v)=>(
-
-
-              <tr key={v.id}>
-
-
-                <td>{v.id}</td>
-
-
-                <td>{v.driver}</td>
-
-
-                <td>{v.location}</td>
-
-
-                <td>{v.speed}</td>
-
-
-
-                <td
-
-                  style={{
-
-                    color:
-                    v.status==="Active"
-                    ? "#22c55e"
-                    : "#ef4444"
-
-                  }}
-
-                >
-
-                  {v.status}
-
-                </td>
-
-
-
-              </tr>
-
-
-            ))
-
-          }
-
-
-        </tbody>
-
-
-      </table>
-
-
-    </div>
-
-  )
+const alerts = [
+
+{
+time:"10:12 AM",
+vehicle:"Truck-01",
+event:"Entered Geofence",
+status:"HIGH"
+},
+
+{
+time:"10:18 AM",
+vehicle:"Car-12",
+event:"Overspeed",
+status:"MEDIUM"
+},
+
+{
+time:"10:25 AM",
+vehicle:"Bus-08",
+event:"Exited Geofence",
+status:"LOW"
+},
+
+{
+time:"10:31 AM",
+vehicle:"Drone-04",
+event:"Battery Critical",
+status:"HIGH"
 }
 
+];
 
-export default VehicleTable;
+export default function VehicleTable(){
+
+return(
+
+<div className="bg-[#171b22] border border-gray-700 rounded-lg mt-6">
+
+<div className="p-5 border-b border-gray-700">
+
+<h2 className="text-2xl font-semibold">
+Recent Alerts
+</h2>
+
+</div>
+
+<table className="w-full">
+
+<thead className="text-gray-400">
+
+<tr>
+
+<th className="p-4 text-left">Time</th>
+
+<th className="text-left">Vehicle</th>
+
+<th className="text-left">Event</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{alerts.map((a,index)=>(
+
+<tr
+key={index}
+className="border-t border-gray-800 hover:bg-[#1e242d]"
+>
+
+<td className="p-4">{a.time}</td>
+
+<td>{a.vehicle}</td>
+
+<td>{a.event}</td>
+
+<td>
+
+<span
+className={`px-3 py-1 rounded text-sm
+
+${a.status==="HIGH"
+?"bg-red-900 text-red-400"
+
+:a.status==="MEDIUM"
+
+?"bg-yellow-900 text-yellow-300"
+
+:"bg-green-900 text-green-400"
+
+}`}
+
+>
+
+{a.status}
+
+</span>
+
+</td>
+
+</tr>
+
+))}
+
+</tbody>
+
+</table>
+
+</div>
+
+);
+
+}
