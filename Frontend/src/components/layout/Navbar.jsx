@@ -7,7 +7,7 @@ import {
 
 export default function Navbar() {
   return (
-    <header className="h-16 bg-gradient-to-r from-blue-700 to-blue-500 flex items-center justify-between px-8 shadow-lg">
+    <header className="h-16 bg-[#0b1118] border-b border-gray-800 flex items-center justify-between px-8">
 
       {/* Left */}
 
@@ -39,13 +39,13 @@ export default function Navbar() {
 
       <div className="flex items-center gap-6">
 
-        <div className="flex items-center bg-blue-600 rounded-lg px-3 py-2 w-64">
+        <div className="flex items-center bg-[#1f2937] rounded-lg px-3 py-2 w-64 border border-gray-700">
 
           <Search size={18} className="text-blue-200" />
 
           <input
             placeholder="Search..."
-            className="bg-transparent outline-none ml-2 text-white placeholder-blue-200 w-full"
+            className="bg-transparent outline-none ml-2 text-white placeholder-gray-500 w-full"
           />
 
         </div>
