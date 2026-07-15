@@ -4,6 +4,7 @@ import {
   BarChart3,
   UserCircle2,
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
   return (
@@ -17,19 +18,67 @@ export default function Navbar() {
           FleetDash
         </h1>
 
-        <nav className="flex gap-10">
+        <nav className="flex items-center gap-8">
 
-          <button className="text-white border-b-2 border-white pb-1 uppercase text-sm tracking-wider">
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `pb-1 text-sm font-medium transition-all ${isActive
+                ? "text-blue-400 border-b-2 border-blue-400"
+                : "text-gray-400 hover:text-white"
+              }`
+            }
+          >
             Dashboard
-          </button>
+          </NavLink>
 
-          <button className="text-blue-100 hover:text-white uppercase text-sm tracking-wider">
-            Fleet
-          </button>
+          <NavLink
+            to="/tracking"
+            className={({ isActive }) =>
+              `pb-1 text-sm font-medium transition-all ${isActive
+                ? "text-blue-400 border-b-2 border-blue-400"
+                : "text-gray-400 hover:text-white"
+              }`
+            }
+          >
+            Tracking
+          </NavLink>
 
-          <button className="text-blue-100 hover:text-white uppercase text-sm tracking-wider">
+          <NavLink
+            to="/vehicles"
+            className={({ isActive }) =>
+              `pb-1 text-sm font-medium transition-all ${isActive
+                ? "text-blue-400 border-b-2 border-blue-400"
+                : "text-gray-400 hover:text-white"
+              }`
+            }
+          >
+            Vehicles
+          </NavLink>
+
+          <NavLink
+            to="/alerts"
+            className={({ isActive }) =>
+              `pb-1 text-sm font-medium transition-all ${isActive
+                ? "text-blue-400 border-b-2 border-blue-400"
+                : "text-gray-400 hover:text-white"
+              }`
+            }
+          >
+            Alerts
+          </NavLink>
+
+          <NavLink
+            to="/analytics"
+            className={({ isActive }) =>
+              `pb-1 text-sm font-medium transition-all ${isActive
+                ? "text-blue-400 border-b-2 border-blue-400"
+                : "text-gray-400 hover:text-white"
+              }`
+            }
+          >
             Analytics
-          </button>
+          </NavLink>
 
         </nav>
 
