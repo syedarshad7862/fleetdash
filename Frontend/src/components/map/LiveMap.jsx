@@ -23,7 +23,7 @@ export default function LiveMap() {
   return (
     <div className="bg-[#151C2C] rounded-2xl border border-gray-800 overflow-hidden shadow-lg">
 
-      {/* Header */}
+      {}
       <div className="flex justify-between items-center px-6 py-4 border-b border-gray-800">
 
         <div>
