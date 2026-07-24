@@ -1,52 +1,55 @@
 import mongoose from "mongoose";
 
-
 const vehicleSchema = new mongoose.Schema(
   {
-
-    vehicleNumber:{
-      type:String,
-      required:true,
-      unique:true
+    vehicleId: {
+      type: String,
+      required: true,
+      unique: true,
     },
 
-
-    driverName:{
-      type:String
+    driverName: {
+      type: String,
+      required: true,
     },
 
-
-    status:{
-      type:String,
-      enum:[
-        "ACTIVE",
-        "OFFLINE"
-      ],
-
-      default:"ACTIVE"
-
+    type: {
+      type: String,
+      enum: ["Truck", "Car", "Bus", "Van"],
+      required: true,
     },
 
+    location: {
+      latitude: {
+        type: Number,
+        default: 0,
+      },
 
-    currentLocation:{
+      longitude: {
+        type: Number,
+        default: 0,
+      },
+    },
 
-      lat:Number,
+    speed: {
+      type: Number,
+      default: 0,
+    },
 
-      lng:Number
+    status: {
+      type: String,
+      enum: ["Moving", "Stopped", "Idle"],
+      default: "Stopped",
+    },
 
-    }
-
+    fuelLevel: {
+      type: Number,
+      default: 100,
+    },
   },
-
-
   {
-    timestamps:true
+    timestamps: true,
   }
-
 );
 
-
-export default mongoose.model(
-  "Vehicle",
-  vehicleSchema
-);
+export default mongoose.model("Vehicle", vehicleSchema);

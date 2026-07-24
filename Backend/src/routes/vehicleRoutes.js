@@ -1,45 +1,23 @@
 import express from "express";
 
-
 import {
-
-    getVehicles,
-    addVehicle,
-    updateLocation
-
+  createVehicle,
+  getVehicles,
+  getVehicle,
+  updateVehicle,
+  deleteVehicle,
 } from "../controllers/vehicleController.js";
-
-
 
 const router = express.Router();
 
+router.post("/", createVehicle);
 
+router.get("/", getVehicles);
 
-// Get vehicles
+router.get("/:id", getVehicle);
 
-router.get(
-    "/",
-    getVehicles
-);
+router.put("/:id", updateVehicle);
 
-
-
-// Add vehicle
-
-router.post(
-    "/",
-    addVehicle
-);
-
-
-
-// Update vehicle location
-
-router.put(
-    "/location/:id",
-    updateLocation
-);
-
-
+router.delete("/:id", deleteVehicle);
 
 export default router;
