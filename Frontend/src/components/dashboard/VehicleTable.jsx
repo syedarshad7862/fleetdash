@@ -1,116 +1,104 @@
-const alerts = [
+export default function VehicleTable({ vehicles }) {
 
-{
-time:"10:12 AM",
-vehicle:"Truck-01",
-event:"Entered Geofence",
-status:"HIGH"
-},
+  return (
 
-{
-time:"10:18 AM",
-vehicle:"Car-12",
-event:"Overspeed",
-status:"MEDIUM"
-},
+    <div className="bg-[#171b22] border border-gray-700 rounded-lg mt-6">
 
-{
-time:"10:25 AM",
-vehicle:"Bus-08",
-event:"Exited Geofence",
-status:"LOW"
-},
+      <div className="flex justify-between items-center p-5 border-b border-gray-700">
 
-{
-time:"10:31 AM",
-vehicle:"Drone-04",
-event:"Battery Critical",
-status:"HIGH"
-}
+        <h2 className="text-2xl font-semibold text-white">
+          Vehicles
+        </h2>
 
-];
+        <span className="text-gray-400">
+          Total: {vehicles.length}
+        </span>
 
-export default function VehicleTable(){
+      </div>
 
-return(
+      <table className="w-full">
 
-<div className="bg-[#171b22] border border-gray-700 rounded-lg mt-6">
+        <thead className="text-gray-400 border-b border-gray-700">
 
-<div className="p-5 border-b border-gray-700">
+          <tr>
 
-<h2 className="text-2xl font-semibold">
-Recent Alerts
-</h2>
+            <th className="p-4 text-left">Vehicle ID</th>
 
-</div>
+            <th className="text-left">Driver</th>
 
-<table className="w-full">
+            <th className="text-left">Type</th>
 
-<thead className="text-gray-400">
+            <th className="text-left">Speed</th>
 
-<tr>
+            <th className="text-left">Fuel</th>
 
-<th className="p-4 text-left">Time</th>
+            <th className="text-left">Status</th>
 
-<th className="text-left">Vehicle</th>
+          </tr>
 
-<th className="text-left">Event</th>
+        </thead>
 
-<th>Status</th>
+        <tbody>
 
-</tr>
+          {vehicles.map((vehicle) => (
 
-</thead>
+            <tr
+              key={vehicle._id}
+              className="border-t border-gray-800 hover:bg-[#1e242d]"
+            >
 
-<tbody>
+              <td className="p-4 font-medium text-white">
+                {vehicle.vehicleId}
+              </td>
 
-{alerts.map((a,index)=>(
+              <td>
+                {vehicle.driverName}
+              </td>
 
-<tr
-key={index}
-className="border-t border-gray-800 hover:bg-[#1e242d]"
->
+              <td>
+                {vehicle.type}
+              </td>
 
-<td className="p-4">{a.time}</td>
+              <td>
+                {vehicle.speed} km/h
+              </td>
 
-<td>{a.vehicle}</td>
+              <td>
+                {vehicle.fuelLevel}%
+              </td>
 
-<td>{a.event}</td>
+              <td>
 
-<td>
+                <span
+                  className={`px-3 py-1 rounded text-sm
 
-<span
-className={`px-3 py-1 rounded text-sm
+                  ${
+                    vehicle.status === "Moving"
+                      ? "bg-green-900 text-green-400"
 
-${a.status==="HIGH"
-?"bg-red-900 text-red-400"
+                      : vehicle.status === "Stopped"
+                      ? "bg-red-900 text-red-400"
 
-:a.status==="MEDIUM"
+                      : "bg-yellow-900 text-yellow-300"
+                  }`}
+                >
 
-?"bg-yellow-900 text-yellow-300"
+                  {vehicle.status}
 
-:"bg-green-900 text-green-400"
+                </span>
 
-}`}
+              </td>
 
->
+            </tr>
 
-{a.status}
+          ))}
 
-</span>
+        </tbody>
 
-</td>
+      </table>
 
-</tr>
+    </div>
 
-))}
-
-</tbody>
-
-</table>
-
-</div>
-
-);
+  );
 
 }

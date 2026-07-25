@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import StatsCard from "../components/dashboard/StatsCard";
 import LiveStatus from "../components/dashboard/LiveStatus";
 import VehicleTable from "../components/dashboard/VehicleTable";
@@ -12,11 +14,30 @@ import {
   Timer,
 } from "lucide-react";
 
+import { getVehicles } from "../services/vehicleService";
+
 export default function Dashboard() {
+
+  const [vehicles, setVehicles] = useState([]);
+
+  useEffect(() => {
+    loadVehicles();
+  }, []);
+
+  const loadVehicles = async () => {
+    try {
+      const data = await getVehicles();
+      setVehicles(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="space-y-6">
 
       {/* Heading */}
+
       <div>
         <h1 className="text-3xl font-bold text-white">
           Fleet Dashboard
@@ -27,13 +48,14 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats */}
+
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
 
         <StatsCard
           title="Active Vehicles"
-          value="1,250"
-          subtitle="Updated 2 sec ago"
+          value={vehicles.length}
+          subtitle="Connected to MongoDB"
           trend="+12%"
           color="bg-blue-600 text-white"
           icon={<Truck size={24} />}
@@ -68,21 +90,26 @@ export default function Dashboard() {
 
       </div>
 
-      {/* Map + Live Status */}
+      {/* Map */}
+
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
         <div className="xl:col-span-3">
-          <LiveMap />
+
+          <LiveMap vehicles={vehicles} />
+
         </div>
 
         <LiveStatus />
 
       </div>
 
-      {/* Alerts */}
-      <VehicleTable />
+      {/* Vehicle Table */}
+
+      <VehicleTable vehicles={vehicles} />
 
       {/* Charts */}
+
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
         <SpeedChart />
