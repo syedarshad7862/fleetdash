@@ -1,8 +1,41 @@
+import { useState } from "react";
+import VehicleInfoCard from "./VehicleInfoCard";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Truck } from "lucide-react";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import greenIconUrl from "leaflet-color-markers/img/marker-icon-green.png";
+import redIconUrl from "leaflet-color-markers/img/marker-icon-red.png";
+import yellowIconUrl from "leaflet-color-markers/img/marker-icon-yellow.png";
+import shadowUrl from "leaflet/dist/images/marker-shadow.png";
+
+
+const greenIcon = new L.Icon({
+  iconUrl: greenIconUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
+
+const redIcon = new L.Icon({
+  iconUrl: redIconUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
+
+const yellowIcon = new L.Icon({
+  iconUrl: yellowIconUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
 
 export default function LiveMap({ vehicles }) {
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   return (
     <div className="bg-[#151C2C] rounded-2xl border border-gray-800 overflow-hidden shadow-lg">
 
@@ -28,57 +61,74 @@ export default function LiveMap({ vehicles }) {
 
       {/* Map */}
       <MapContainer
-        center={[12.9716, 77.5946]}
-        zoom={12}
-        className="h-[450px] w-full"
-      >
+  center={
+    vehicles.length > 0
+      ? [
+          vehicles[0].location.latitude,
+          vehicles[0].location.longitude,
+        ]
+      : [12.9716, 77.5946]
+  }
+  zoom={12}
+  className="h-[450px] w-full"
+>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {vehicles.map((vehicle) => (
-          <Marker
-            key={vehicle._id}
-            position={[
-              vehicle.location.latitude,
-              vehicle.location.longitude,
-            ]}
-          >
-            <Popup>
+                {vehicles.map((vehicle) => {
+          const icon =
+            vehicle.status?.toLowerCase() === "moving"
+              ? greenIcon
+              : vehicle.status?.toLowerCase() === "stopped"
+              ? redIcon
+              : yellowIcon;
 
-              <div className="space-y-2">
+          return (
+            <Marker
+              key={vehicle._id}
+              icon={icon}
+              position={[
+                vehicle.location.latitude,
+                vehicle.location.longitude,
+              ]}
+              eventHandlers={{
+                click: () => setSelectedVehicle(vehicle),
+              }}
+            >
+              <Popup>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Truck size={18} />
+                    <strong>{vehicle.vehicleId}</strong>
+                  </div>
 
-                <div className="flex items-center gap-2">
-                  <Truck size={18} />
-                  <strong>{vehicle.vehicleId}</strong>
+                  <p>
+                    <strong>Driver:</strong> {vehicle.driverName}
+                  </p>
+
+                  <p>
+                    <strong>Type:</strong> {vehicle.type}
+                  </p>
+
+                  <p>
+                    <strong>Status:</strong> {vehicle.status}
+                  </p>
+
+                  <p>
+                    <strong>Speed:</strong> {vehicle.speed} km/h
+                  </p>
+
+                  <p>
+                    <strong>Fuel:</strong> {vehicle.fuelLevel}%
+                  </p>
                 </div>
-
-                <p>
-                  <strong>Driver:</strong> {vehicle.driverName}
-                </p>
-
-                <p>
-                  <strong>Type:</strong> {vehicle.type}
-                </p>
-
-                <p>
-                  <strong>Status:</strong> {vehicle.status}
-                </p>
-
-                <p>
-                  <strong>Speed:</strong> {vehicle.speed} km/h
-                </p>
-
-                <p>
-                  <strong>Fuel:</strong> {vehicle.fuelLevel}%
-                </p>
-
-              </div>
-
-            </Popup>
-          </Marker>
-        ))}
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
+      <VehicleInfoCard vehicle={selectedVehicle} />
 
     </div>
   );
