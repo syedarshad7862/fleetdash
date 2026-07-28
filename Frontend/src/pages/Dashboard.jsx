@@ -6,6 +6,7 @@ import VehicleTable from "../components/dashboard/VehicleTable";
 import LiveMap from "../components/map/LiveMap";
 import SpeedChart from "../components/charts/SpeedCharts";
 import VehicleStatusChart from "../components/charts/VehicleStatusChart";
+import socket from "../services/socket";
 
 import {
   Truck,
@@ -31,6 +32,21 @@ export default function Dashboard() {
     return () => clearInterval(interval);
 
   }, []);
+  useEffect(() => {
+  socket.on("vehicleUpdated", (updatedVehicle) => {
+    setVehicles((prev) =>
+      prev.map((vehicle) =>
+        vehicle._id === updatedVehicle._id
+          ? updatedVehicle
+          : vehicle
+      )
+    );
+  });
+
+  return () => {
+    socket.off("vehicleUpdated");
+  };
+}, []);
 
   const loadVehicles = async () => {
 

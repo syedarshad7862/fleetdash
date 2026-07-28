@@ -69,6 +69,7 @@ export const getVehicle = async (req, res) => {
 // Update Vehicle
 export const updateVehicle = async (req, res) => {
   try {
+
     const vehicle = await Vehicle.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -84,10 +85,14 @@ export const updateVehicle = async (req, res) => {
       });
     }
 
+    // Send updated vehicle to all connected clients
+    io.emit("vehicleUpdated", vehicle);
+
     res.json({
       success: true,
       data: vehicle,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
