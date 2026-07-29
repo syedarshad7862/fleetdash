@@ -1,92 +1,38 @@
 import { Server } from "socket.io";
 
+let io;
 
-const setupSocket = (server)=>{
+const setupSocket = (server) => {
 
+  io = new Server(server, {
+    cors: {
+      origin: process.env.CLIENT_URL,
+      methods: ["GET", "POST"],
+    },
+  });
 
-    const io = new Server(server,{
+  io.on("connection", (socket) => {
 
+    console.log("Vehicle client connected:", socket.id);
 
-        cors:{
+    socket.on("vehicle-location", (data) => {
 
-            origin:
-            process.env.CLIENT_URL,
+      console.log(data);
 
-            methods:[
-                "GET",
-                "POST"
-            ]
-
-        }
+      io.emit("live-location", data);
 
     });
 
+    socket.on("disconnect", () => {
 
+      console.log("Client disconnected");
 
-    io.on(
-        "connection",
+    });
 
-        (socket)=>{
-
-
-            console.log(
-                "Vehicle client connected:",
-                socket.id
-            );
-
-
-
-            // receive location
-
-
-            socket.on(
-
-                "vehicle-location",
-
-                (data)=>{
-
-
-                    console.log(
-                        data
-                    );
-
-
-
-                    // broadcast to dashboard
-
-                    io.emit(
-                        "live-location",
-                        data
-                    );
-
-
-                }
-
-            );
-
-
-
-
-            socket.on(
-                "disconnect",
-
-                ()=>{
-
-                    console.log(
-                        "Client disconnected"
-                    );
-
-                }
-
-            );
-
-
-        }
-
-    );
-
+  });
 
 };
 
+export const getIO = () => io;
 
 export default setupSocket;

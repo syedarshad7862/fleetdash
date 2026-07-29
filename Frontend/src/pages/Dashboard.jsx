@@ -6,7 +6,7 @@ import VehicleTable from "../components/dashboard/VehicleTable";
 import LiveMap from "../components/map/LiveMap";
 import SpeedChart from "../components/charts/SpeedCharts";
 import VehicleStatusChart from "../components/charts/VehicleStatusChart";
-import socket from "../services/socket";
+import socket from "../socket";
 
 import {
   Truck,

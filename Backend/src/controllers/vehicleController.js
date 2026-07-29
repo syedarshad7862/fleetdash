@@ -1,29 +1,23 @@
 import Vehicle from "../models/Vehicle.js";
+import { io } from "../server.js";
 
 // Create Vehicle
 export const createVehicle = async (req, res) => {
+  try {
+    const vehicle = await Vehicle.create(req.body);
 
-    console.log(req.body);
-
-    try {
-
-        const vehicle = await Vehicle.create(req.body);
-
-        res.status(201).json({
-            success: true,
-            data: vehicle,
-        });
-
-    } catch (error) {
-
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-
-    }
-
+    res.status(201).json({
+      success: true,
+      data: vehicle,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
+
 // Get All Vehicles
 export const getVehicles = async (req, res) => {
   try {
@@ -54,7 +48,7 @@ export const getVehicle = async (req, res) => {
       });
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       data: vehicle,
     });
@@ -69,30 +63,29 @@ export const getVehicle = async (req, res) => {
 // Update Vehicle
 export const updateVehicle = async (req, res) => {
   try {
-
-    const vehicle = await Vehicle.findByIdAndUpdate(
+    const updatedVehicle = await Vehicle.findByIdAndUpdate(
       req.params.id,
       req.body,
       {
         new: true,
+        runValidators: true,
       }
     );
 
-    if (!vehicle) {
+    if (!updatedVehicle) {
       return res.status(404).json({
         success: false,
         message: "Vehicle not found",
       });
     }
 
-    // Send updated vehicle to all connected clients
-    io.emit("vehicleUpdated", vehicle);
+    // Notify every connected dashboard
+    io.emit("vehicleUpdated", updatedVehicle);
 
-    res.json({
+    res.status(200).json({
       success: true,
-      data: vehicle,
+      data: updatedVehicle,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -113,7 +106,7 @@ export const deleteVehicle = async (req, res) => {
       });
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Vehicle deleted successfully",
     });
