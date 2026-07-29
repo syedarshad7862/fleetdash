@@ -1,153 +1,104 @@
-const VehicleTable = () => {
-
-
-  const vehicles = [
-
-    {
-      id:"TN59 AB 1234",
-      driver:"Kannan",
-      location:"Bangalore",
-      speed:"65 km/h",
-      status:"Active"
-    },
-
-    {
-      id:"TN01 XY 5678",
-      driver:"Arun",
-      location:"Chennai",
-      speed:"0 km/h",
-      status:"Stopped"
-    },
-
-    {
-      id:"KA05 MN 9090",
-      driver:"Rahul",
-      location:"Electronic City",
-      speed:"45 km/h",
-      status:"Active"
-    }
-
-  ];
-
-
+export default function VehicleTable({ vehicles }) {
 
   return (
 
-    <div
+    <div className="bg-[#171b22] border border-gray-700 rounded-lg mt-6">
 
-      style={{
+      <div className="flex justify-between items-center p-5 border-b border-gray-700">
 
-        background:"#1e293b",
+        <h2 className="text-2xl font-semibold text-white">
+          Vehicles
+        </h2>
 
-        padding:"20px",
+        <span className="text-gray-400">
+          Total: {vehicles.length}
+        </span>
 
-        borderRadius:"18px"
+      </div>
 
-      }}
+      <table className="w-full">
 
-    >
-
-
-      <h2>
-        🚚 Vehicle Status
-      </h2>
-
-
-      <table
-
-        style={{
-
-          width:"100%",
-
-          marginTop:"20px",
-
-          borderCollapse:"collapse"
-
-        }}
-
-      >
-
-        <thead>
+        <thead className="text-gray-400 border-b border-gray-700">
 
           <tr>
 
-            <th>Vehicle</th>
+            <th className="p-4 text-left">Vehicle ID</th>
 
-            <th>Driver</th>
+            <th className="text-left">Driver</th>
 
-            <th>Location</th>
+            <th className="text-left">Type</th>
 
-            <th>Speed</th>
+            <th className="text-left">Speed</th>
 
-            <th>Status</th>
+            <th className="text-left">Fuel</th>
+
+            <th className="text-left">Status</th>
 
           </tr>
 
         </thead>
 
-
-
         <tbody>
 
+          {vehicles.map((vehicle) => (
 
-          {
+            <tr
+              key={vehicle._id}
+              className="border-t border-gray-800 hover:bg-[#1e242d]"
+            >
 
-            vehicles.map((v)=>(
+              <td className="p-4 font-medium text-white">
+                {vehicle.vehicleId}
+              </td>
 
+              <td>
+                {vehicle.driverName}
+              </td>
 
-              <tr key={v.id}>
+              <td>
+                {vehicle.type}
+              </td>
 
+              <td>
+                {vehicle.speed} km/h
+              </td>
 
-                <td>{v.id}</td>
+              <td>
+                {vehicle.fuelLevel}%
+              </td>
 
+              <td>
 
-                <td>{v.driver}</td>
+                <span
+                  className={`px-3 py-1 rounded text-sm
 
+                  ${
+                    vehicle.status === "Moving"
+                      ? "bg-green-900 text-green-400"
 
-                <td>{v.location}</td>
+                      : vehicle.status === "Stopped"
+                      ? "bg-red-900 text-red-400"
 
-
-                <td>{v.speed}</td>
-
-
-
-                <td
-
-                  style={{
-
-                    color:
-                    v.status==="Active"
-                    ? "#22c55e"
-                    : "#ef4444"
-
-                  }}
-
+                      : "bg-yellow-900 text-yellow-300"
+                  }`}
                 >
 
-                  {v.status}
+                  {vehicle.status}
 
-                </td>
+                </span>
 
+              </td>
 
+            </tr>
 
-              </tr>
-
-
-            ))
-
-          }
-
+          ))}
 
         </tbody>
 
-
       </table>
-
 
     </div>
 
-  )
+  );
+
 }
-
-
-export default VehicleTable;

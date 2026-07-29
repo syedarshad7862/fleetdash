@@ -2,14 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import "leaflet/dist/leaflet.css";
 
 import App from "./App";
+import "./index.css";   // ✅ THIS LINE WAS MISSING
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-
     <BrowserRouter>
-
       <App />
 
       <Toaster
@@ -18,8 +18,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           duration: 3000,
         }}
       />
-
     </BrowserRouter>
-
   </React.StrictMode>
 );

@@ -1,127 +1,167 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useState } from "react";
+import VehicleInfoCard from "./VehicleInfoCard";
 
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+} from "react-leaflet";
+
+import { Truck } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
+import L from "leaflet";
+import greenIconUrl from "leaflet-color-markers/img/marker-icon-green.png";
+import redIconUrl from "leaflet-color-markers/img/marker-icon-red.png";
+import yellowIconUrl from "leaflet-color-markers/img/marker-icon-yellow.png";
+import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 
-const LiveMap = () => {
+const greenIcon = new L.Icon({
+  iconUrl: greenIconUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
 
+const redIcon = new L.Icon({
+  iconUrl: redIconUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
 
-  const vehicles = [
+const yellowIcon = new L.Icon({
+  iconUrl: yellowIconUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
 
-    {
-      id:"TN59 AB 1234",
-      lat:12.9716,
-      lng:77.5946,
-      status:"Moving"
-    },
-
-
-    {
-      id:"TN01 XY 5678",
-      lat:12.9352,
-      lng:77.6245,
-      status:"Stopped"
-    }
-
-  ];
-
-
+export default function LiveMap({ vehicles }) {
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   return (
+    <div className="bg-[#151C2C] rounded-2xl border border-gray-800 overflow-hidden shadow-lg">
 
-    <div
+      {/* Header */}
+      <div className="flex justify-between items-center px-6 py-4 border-b border-gray-800">
 
-      style={{
+        <div>
+          <h2 className="text-xl font-semibold text-white">
+            Live Vehicle Tracking
+          </h2>
 
-        background:"#1e293b",
+          <p className="text-gray-400 text-sm mt-1">
+            Real-time vehicle locations
+          </p>
+        </div>
 
-        padding:"20px",
+        <div className="flex items-center gap-2 text-green-400 text-sm">
+          <span className="w-2 h-2 rounded-full bg-green-500"></span>
+          Live
+        </div>
 
-        borderRadius:"18px"
+      </div>
 
-      }}
-
-    >
-
-
-      <h2
-        style={{
-          marginBottom:"15px"
-        }}
-      >
-        🗺 Live Vehicle Tracking
-      </h2>
-
-
-
+      {/* Map */}
       <MapContainer
-
-        center={[12.9716,77.5946]}
-
+        center={
+          vehicles.length > 0
+            ? [
+              vehicles[0].location.latitude,
+              vehicles[0].location.longitude,
+            ]
+            : [12.9716, 77.5946]
+        }
         zoom={12}
-
-        style={{
-
-          height:"400px",
-
-          width:"100%",
-
-          borderRadius:"15px"
-
-        }}
-
+        className="h-[450px] w-full"
       >
-
-
         <TileLayer
-
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-
         />
 
+        {vehicles.map((vehicle) => {
+          const icon =
+            vehicle.status?.toLowerCase() === "moving"
+              ? greenIcon
+              : vehicle.status?.toLowerCase() === "stopped"
+                ? redIcon
+                : yellowIcon;
+          const route = [
+            [
+              vehicle.location.latitude - 0.01,
+              vehicle.location.longitude - 0.02,
+            ],
+            [
+              vehicle.location.latitude - 0.005,
+              vehicle.location.longitude - 0.01,
+            ],
+            [
+              vehicle.location.latitude,
+              vehicle.location.longitude,
+            ],
+          ];
 
+          return (
+  <>
+    <Polyline
+      positions={route}
+      pathOptions={{
+        color: "#3B82F6",
+        weight: 4,
+      }}
+    />
 
-        {
-
-          vehicles.map((vehicle)=>(
-
-
-            <Marker
-
-              key={vehicle.id}
-
-              position={[vehicle.lat, vehicle.lng]}
-
-            >
-
-
+    <Marker
+      key={vehicle._id}
+      icon={icon}
+      position={[
+        vehicle.location.latitude,
+        vehicle.location.longitude,
+      ]}
+      eventHandlers={{
+        click: () => setSelectedVehicle(vehicle),
+      }}
+    >
               <Popup>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Truck size={18} />
+                    <strong>{vehicle.vehicleId}</strong>
+                  </div>
 
-                🚚 {vehicle.id}
+                  <p>
+                    <strong>Driver:</strong> {vehicle.driverName}
+                  </p>
 
-                <br/>
+                  <p>
+                    <strong>Type:</strong> {vehicle.type}
+                  </p>
 
-                Status: {vehicle.status}
+                  <p>
+                    <strong>Status:</strong> {vehicle.status}
+                  </p>
 
+                  <p>
+                    <strong>Speed:</strong> {vehicle.speed} km/h
+                  </p>
 
+                  <p>
+                    <strong>Fuel:</strong> {vehicle.fuelLevel}%
+                  </p>
+                </div>
               </Popup>
-
-
             </Marker>
-
-
-          ))
-
-        }
-
-
-
+            </>
+          );
+        })}
       </MapContainer>
-
+      <VehicleInfoCard vehicle={selectedVehicle} />
 
     </div>
-
-  )
+  );
 }
-
-
-export default LiveMap;

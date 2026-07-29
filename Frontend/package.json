@@ -14,10 +14,12 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.2.0",
     "@mui/material": "^9.2.0",
+    "@tailwindcss/vite": "^4.3.2",
     "axios": "^1.18.1",
     "dayjs": "^1.11.21",
     "framer-motion": "^12.42.2",
     "leaflet": "^1.9.4",
+    "leaflet-color-markers": "^0.1.0",
     "lucide-react": "^1.24.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -26,6 +28,7 @@
     "react-router-dom": "^7.18.1",
     "recharts": "^3.9.2",
     "socket.io-client": "^4.8.3",
+    "tailwindcss": "^4.3.2",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
