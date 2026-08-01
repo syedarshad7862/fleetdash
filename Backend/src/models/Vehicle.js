@@ -46,6 +46,12 @@ const vehicleSchema = new mongoose.Schema(
       type: Number,
       default: 100,
     },
+
+    // Geographical zone assigned to vehicle
+    zone: {
+      type: String,
+      default: "Unassigned",
+    },
   },
   {
     timestamps: true,
