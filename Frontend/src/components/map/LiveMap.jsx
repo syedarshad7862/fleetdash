@@ -6,7 +6,7 @@ import {
   TileLayer,
   Marker,
   Popup,
-  Polyline,
+  Polygon,
 } from "react-leaflet";
 
 import { Truck } from "lucide-react";
