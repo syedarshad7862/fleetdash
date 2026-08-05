@@ -1,5 +1,7 @@
 import Vehicle from "../models/Vehicle.js";
 import { io } from "../server.js";
+import { createGeofenceAlert } from "../services/geofenceService.js";
+import { zones } from "../data/zones.js";
 
 // Create Vehicle
 export const createVehicle = async (req, res) => {
@@ -63,6 +65,7 @@ export const getVehicle = async (req, res) => {
 // Update Vehicle
 export const updateVehicle = async (req, res) => {
   try {
+
     const updatedVehicle = await Vehicle.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -79,18 +82,52 @@ export const updateVehicle = async (req, res) => {
       });
     }
 
-    // Notify every connected dashboard
+    // Send updated vehicle to dashboard
     io.emit("vehicleUpdated", updatedVehicle);
+
+
+    // Find vehicle's assigned zone
+    const zone = zones.find(
+      (z) => z.name === updatedVehicle.zone
+    );
+
+
+    // Check geofence
+    if (zone) {
+
+      const alert = await createGeofenceAlert(
+        updatedVehicle,
+        zone.coordinates
+      );
+
+
+      // If vehicle is outside the zone
+      if (alert) {
+
+        console.log(
+          `🚨 Geofence breach: ${updatedVehicle.vehicleId}`
+        );
+
+        // Send alert to all dashboards
+        io.emit("geofenceAlert", alert);
+      }
+    }
+
 
     res.status(200).json({
       success: true,
       data: updatedVehicle,
     });
+
   } catch (error) {
+
+    console.error(error);
+
     res.status(500).json({
       success: false,
       message: error.message,
     });
+
   }
 };
 

@@ -1,40 +1,49 @@
 import * as turf from "@turf/turf";
+import Alert from "../models/Alert.js";
+
+// Check whether vehicle is inside zone
+export const checkGeofence = (vehiclePoint, zone) => {
+
+  const point = turf.point([
+    vehiclePoint.lng,
+    vehiclePoint.lat
+  ]);
+
+  const polygon = turf.polygon([zone]);
+
+  return turf.booleanPointInPolygon(
+    point,
+    polygon
+  );
+};
 
 
-// check vehicle inside zone
+// Create geofence alert
+export const createGeofenceAlert = async (vehicle, zone) => {
 
-export const checkGeofence = (
-    vehiclePoint,
+  const inside = checkGeofence(
+    {
+      lat: vehicle.location.latitude,
+      lng: vehicle.location.longitude
+    },
     zone
-)=>{
+  );
 
+  // Vehicle is inside
+  if (inside) {
+    return null;
+  }
 
-    const point = turf.point([
+  // Vehicle is outside
+  const alert = await Alert.create({
+    vehicleId: vehicle._id,
 
-        vehiclePoint.lng,
+    type: "GEOFENCE_BREACH",
 
-        vehiclePoint.lat
+    message: `Vehicle ${vehicle.vehicleId} has left the geofenced zone`,
 
-    ]);
+    resolved: false
+  });
 
-
-
-    const polygon =
-    turf.polygon([zone]);
-
-
-
-    const inside =
-    turf.booleanPointInPolygon(
-
-        point,
-
-        polygon
-
-    );
-
-
-
-    return inside;
-
+  return alert;
 };
