@@ -1,142 +1,212 @@
-import {
-  AlertTriangle
-} from "lucide-react";
-
+import { useEffect, useState } from "react";
+import { AlertTriangle } from "lucide-react";
+import socket from "../../socket";
 
 const AlertPanel = () => {
 
+  const [alerts, setAlerts] = useState([]);
 
-  const alerts = [
+  useEffect(() => {
 
-    {
-      vehicle:"TN59 AB 1234",
-      message:"Exited Bangalore Zone",
-      time:"10:30 AM"
-    },
+    // ==============================
+    // NEW GEOFENCE ALERT
+    // ==============================
 
-    {
-      vehicle:"KA05 MN 9090",
-      message:"Speed limit exceeded",
-      time:"11:15 AM"
-    },
+    const handleNewAlert = (alert) => {
 
-    {
-      vehicle:"TN01 XY 5678",
-      message:"Vehicle stopped too long",
-      time:"12:00 PM"
-    }
+      console.log("🚨 New alert received:", alert);
 
-  ];
+      setAlerts((prev) => {
 
+        // Prevent duplicate alert
+        const alreadyExists = prev.some(
+          (item) => item._id === alert._id
+        );
+
+        if (alreadyExists) {
+          return prev;
+        }
+
+        return [alert, ...prev];
+      });
+
+    };
+
+
+    // ==============================
+    // GEOFENCE ALERT RESOLVED
+    // ==============================
+
+    const handleResolvedAlert = (alert) => {
+
+      console.log("✅ Alert resolved:", alert);
+
+      setAlerts((prev) =>
+        prev.map((item) =>
+          item._id === alert._id
+            ? {
+                ...item,
+                resolved: true
+              }
+            : item
+        )
+      );
+
+    };
+
+
+    // Listen for alerts
+    socket.on(
+      "geofenceAlert",
+      handleNewAlert
+    );
+
+
+    // Listen for resolved alerts
+    socket.on(
+      "geofenceResolved",
+      handleResolvedAlert
+    );
+
+
+    // Cleanup
+    return () => {
+
+      socket.off(
+        "geofenceAlert",
+        handleNewAlert
+      );
+
+      socket.off(
+        "geofenceResolved",
+        handleResolvedAlert
+      );
+
+    };
+
+  }, []);
 
 
   return (
 
     <div
-
       style={{
-
-        background:"#1e293b",
-
-        padding:"20px",
-
-        borderRadius:"18px"
-
+        background: "#1e293b",
+        padding: "20px",
+        borderRadius: "18px"
       }}
-
     >
 
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}
+      >
 
-      <h2>
-        🚨 Alerts
-      </h2>
+        <h2>
+          🚨 Alerts
+        </h2>
 
+        <span>
+          {alerts.length} Alerts
+        </span>
+
+      </div>
 
 
       <div
         style={{
-          marginTop:"20px"
+          marginTop: "20px"
         }}
       >
 
+        {alerts.length === 0 ? (
 
-        {
+          <p
+            style={{
+              color: "#94a3b8"
+            }}
+          >
+            No alerts yet
+          </p>
 
-          alerts.map((alert,index)=>(
+        ) : (
 
+          alerts.map((alert) => (
 
             <div
-
-              key={index}
-
+              key={alert._id}
               style={{
-
-                display:"flex",
-
-                gap:"15px",
-
-                padding:"15px",
-
-                marginBottom:"12px",
-
-                background:"#0f172a",
-
-                borderRadius:"12px"
-
+                display: "flex",
+                gap: "15px",
+                padding: "15px",
+                marginBottom: "12px",
+                background: "#0f172a",
+                borderRadius: "12px"
               }}
-
             >
 
-
-              <AlertTriangle color="#ef4444"/>
+              <AlertTriangle
+                color={
+                  alert.resolved
+                    ? "#22c55e"
+                    : "#ef4444"
+                }
+              />
 
 
               <div>
 
-
                 <h4>
-                  {alert.vehicle}
+                  {alert.type}
                 </h4>
 
 
                 <p
                   style={{
-                    color:"#94a3b8"
+                    color: "#94a3b8"
                   }}
                 >
-
                   {alert.message}
-
                 </p>
 
 
-
                 <small>
-
-                  {alert.time}
-
+                  {new Date(
+                    alert.createdAt
+                  ).toLocaleTimeString()}
                 </small>
 
 
+                <div
+                  style={{
+                    marginTop: "5px",
+                    color: alert.resolved
+                      ? "#22c55e"
+                      : "#ef4444"
+                  }}
+                >
+                  {alert.resolved
+                    ? "RESOLVED"
+                    : "ACTIVE"}
+                </div>
+
               </div>
-
-
 
             </div>
 
-
           ))
 
-        }
-
+        )}
 
       </div>
 
-
     </div>
 
-  )
-}
+  );
 
+};
 
 export default AlertPanel;

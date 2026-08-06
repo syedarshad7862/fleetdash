@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import AlertPanel from "../components/dashboard/AlertPanel";
 import StatsCard from "../components/dashboard/StatsCard";
 import LiveStatus from "../components/dashboard/LiveStatus";
 import VehicleTable from "../components/dashboard/VehicleTable";
@@ -147,15 +147,19 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
-        <div className="xl:col-span-3">
+  <div className="xl:col-span-3">
 
-          <LiveMap vehicles={vehicles} />
+    <LiveMap vehicles={vehicles} />
 
-        </div>
+  </div>
 
-        <LiveStatus />
+  <LiveStatus />
 
-      </div>
+</div>
+
+{/* Alerts */}
+
+<AlertPanel />
 
       {/* Vehicle Table */}
 

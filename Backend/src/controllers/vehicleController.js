@@ -63,6 +63,7 @@ export const getVehicle = async (req, res) => {
 };
 
 // Update Vehicle
+// Update Vehicle
 export const updateVehicle = async (req, res) => {
   try {
 
@@ -86,31 +87,38 @@ export const updateVehicle = async (req, res) => {
     io.emit("vehicleUpdated", updatedVehicle);
 
 
-    // Find vehicle's assigned zone
-    const zone = zones.find(
-      (z) => z.name === updatedVehicle.zone
+    // ==============================
+    // GEOFENCE CHECK
+    // ==============================
+
+    // Example Bangalore geofence
+    const zone = [
+      [77.55, 12.95],
+      [77.65, 12.95],
+      [77.65, 13.05],
+      [77.55, 13.05],
+      [77.55, 12.95]
+    ];
+
+    const alert = await createGeofenceAlert(
+      updatedVehicle,
+      zone
     );
 
 
-    // Check geofence
-    if (zone) {
+    // If vehicle is outside zone
+    if (alert) {
 
-      const alert = await createGeofenceAlert(
-        updatedVehicle,
-        zone.coordinates
+      console.log(
+        "🚨 GEOFENCE ALERT:",
+        alert.message
       );
 
-
-      // If vehicle is outside the zone
-      if (alert) {
-
-        console.log(
-          `🚨 Geofence breach: ${updatedVehicle.vehicleId}`
-        );
-
-        // Send alert to all dashboards
-        io.emit("geofenceAlert", alert);
-      }
+      // Send alert to frontend
+      io.emit(
+        "geofenceAlert",
+        alert
+      );
     }
 
 
@@ -121,7 +129,7 @@ export const updateVehicle = async (req, res) => {
 
   } catch (error) {
 
-    console.error(error);
+    console.log(error);
 
     res.status(500).json({
       success: false,
