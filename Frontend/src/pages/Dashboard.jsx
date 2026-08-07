@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import AlertPanel from "../components/dashboard/AlertPanel";
 import StatsCard from "../components/dashboard/StatsCard";
 import LiveStatus from "../components/dashboard/LiveStatus";
@@ -6,6 +7,7 @@ import VehicleTable from "../components/dashboard/VehicleTable";
 import LiveMap from "../components/map/LiveMap";
 import SpeedChart from "../components/charts/SpeedCharts";
 import VehicleStatusChart from "../components/charts/VehicleStatusChart";
+
 import socket from "../socket";
 
 import {
@@ -21,73 +23,131 @@ export default function Dashboard() {
 
   const [vehicles, setVehicles] = useState([]);
 
+
+  // ==========================================
+  // LOAD VEHICLES
+  // ==========================================
+
   useEffect(() => {
+
+    const loadVehicles = async () => {
+
+      try {
+
+        const data = await getVehicles();
+
+        setVehicles(data);
+
+      } catch (error) {
+
+        console.log("Vehicle loading error:", error);
+
+      }
+
+    };
 
     loadVehicles();
 
-    const interval = setInterval(() => {
-      loadVehicles();
-    }, 5000);
+    const interval = setInterval(
+      loadVehicles,
+      5000
+    );
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
 
   }, []);
+
+
+  // ==========================================
+  // VEHICLE SOCKET
+  // ==========================================
+
   useEffect(() => {
-  socket.on("vehicleUpdated", (updatedVehicle) => {
-    setVehicles((prev) =>
-      prev.map((vehicle) =>
-        vehicle._id === updatedVehicle._id
-          ? updatedVehicle
-          : vehicle
-      )
+
+    console.log(
+      "🔌 Dashboard socket:",
+      socket.id
     );
-  });
 
-  return () => {
-    socket.off("vehicleUpdated");
-  };
-}, []);
 
-  const loadVehicles = async () => {
+    const handleVehicleUpdate = (
+      updatedVehicle
+    ) => {
 
-    try {
+      console.log(
+        "🚗 Vehicle updated:",
+        updatedVehicle.vehicleId
+      );
 
-      const data = await getVehicles();
-      setVehicles(data);
 
-    } catch (error) {
+      setVehicles((prev) =>
+        prev.map((vehicle) =>
+          vehicle._id === updatedVehicle._id
+            ? updatedVehicle
+            : vehicle
+        )
+      );
 
-      console.log(error);
+    };
 
-    }
 
-  };
+    socket.on(
+      "vehicleUpdated",
+      handleVehicleUpdate
+    );
 
-  // Dynamic Dashboard Stats
 
-  const movingVehicles = vehicles.filter(
-    (vehicle) => vehicle.status === "Moving"
-  ).length;
+    return () => {
 
-  const stoppedVehicles = vehicles.filter(
-    (vehicle) => vehicle.status === "Stopped"
-  ).length;
+      socket.off(
+        "vehicleUpdated",
+        handleVehicleUpdate
+      );
+
+    };
+
+  }, []);
+
+
+  // ==========================================
+  // STATS
+  // ==========================================
+
+  const movingVehicles =
+    vehicles.filter(
+      (vehicle) =>
+        vehicle.status === "Moving"
+    ).length;
+
+
+  const stoppedVehicles =
+    vehicles.filter(
+      (vehicle) =>
+        vehicle.status === "Stopped"
+    ).length;
+
 
   const avgSpeed =
     vehicles.length > 0
       ? Math.round(
           vehicles.reduce(
-            (sum, vehicle) => sum + vehicle.speed,
+            (sum, vehicle) =>
+              sum + vehicle.speed,
             0
           ) / vehicles.length
         )
       : 0;
 
+
+  // ==========================================
+  // UI
+  // ==========================================
+
   return (
 
     <div className="space-y-6">
-
-      {/* Heading */}
 
       <div>
 
@@ -101,7 +161,8 @@ export default function Dashboard() {
 
       </div>
 
-      {/* Stats */}
+
+      {/* STATS */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
 
@@ -114,6 +175,7 @@ export default function Dashboard() {
           icon={<Truck size={24} />}
         />
 
+
         <StatsCard
           title="Moving"
           value={movingVehicles}
@@ -123,6 +185,7 @@ export default function Dashboard() {
           icon={<Gauge size={24} />}
         />
 
+
         <StatsCard
           title="Stopped"
           value={stoppedVehicles}
@@ -131,6 +194,7 @@ export default function Dashboard() {
           color="bg-red-600 text-white"
           icon={<Bell size={24} />}
         />
+
 
         <StatsCard
           title="Average Speed"
@@ -143,35 +207,47 @@ export default function Dashboard() {
 
       </div>
 
-      {/* Map */}
+
+      {/* MAP */}
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
-  <div className="xl:col-span-3">
+        <div className="xl:col-span-3">
 
-    <LiveMap vehicles={vehicles} />
+          <LiveMap
+            vehicles={vehicles}
+          />
 
-  </div>
+        </div>
 
-  <LiveStatus />
+        <LiveStatus />
 
-</div>
+      </div>
 
-{/* Alerts */}
 
-<AlertPanel />
+      {/* VEHICLES */}
 
-      {/* Vehicle Table */}
+      <VehicleTable
+        vehicles={vehicles}
+      />
 
-      <VehicleTable vehicles={vehicles} />
 
-      {/* Charts */}
+      {/* ALERTS */}
+
+      <AlertPanel />
+
+
+      {/* CHARTS */}
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
-        <SpeedChart vehicles={vehicles} />
+        <SpeedChart
+          vehicles={vehicles}
+        />
 
-        <VehicleStatusChart vehicles={vehicles} />
+        <VehicleStatusChart
+          vehicles={vehicles}
+        />
 
       </div>
 

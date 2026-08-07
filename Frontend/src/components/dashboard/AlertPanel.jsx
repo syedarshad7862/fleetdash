@@ -6,80 +6,112 @@ const AlertPanel = () => {
 
   const [alerts, setAlerts] = useState([]);
 
+
+  // ==========================================
+  // LOAD EXISTING ALERTS
+  // ==========================================
+
   useEffect(() => {
 
-    // ==============================
-    // NEW GEOFENCE ALERT
-    // ==============================
+    const loadAlerts = async () => {
 
-    const handleNewAlert = (alert) => {
+      try {
 
-      console.log("🚨 New alert received:", alert);
+        const response = await fetch(
+          "http://localhost:5000/api/alerts"
+        );
+
+        const result =
+          await response.json();
+
+        console.log(
+          "📥 Existing alerts:",
+          result
+        );
+
+
+        if (result.success) {
+
+          setAlerts(
+            result.data
+          );
+
+        }
+
+      } catch (error) {
+
+        console.log(
+          "❌ Failed to load alerts:",
+          error
+        );
+
+      }
+
+    };
+
+
+    loadAlerts();
+
+  }, []);
+
+
+  // ==========================================
+  // REAL-TIME ALERTS
+  // ==========================================
+
+  useEffect(() => {
+
+    console.log(
+      "🚨 AlertPanel listening for geofence alerts"
+    );
+
+
+    const handleGeofenceAlert = (
+      alert
+    ) => {
+
+      console.log(
+        "🚨 Frontend received alert:",
+        alert
+      );
+
 
       setAlerts((prev) => {
 
-        // Prevent duplicate alert
-        const alreadyExists = prev.some(
-          (item) => item._id === alert._id
+        const exists = prev.some(
+          (item) =>
+            item._id === alert._id
         );
 
-        if (alreadyExists) {
+
+        if (exists) {
+
           return prev;
+
         }
 
-        return [alert, ...prev];
+
+        return [
+          alert,
+          ...prev
+        ];
+
       });
 
     };
 
 
-    // ==============================
-    // GEOFENCE ALERT RESOLVED
-    // ==============================
-
-    const handleResolvedAlert = (alert) => {
-
-      console.log("✅ Alert resolved:", alert);
-
-      setAlerts((prev) =>
-        prev.map((item) =>
-          item._id === alert._id
-            ? {
-                ...item,
-                resolved: true
-              }
-            : item
-        )
-      );
-
-    };
-
-
-    // Listen for alerts
     socket.on(
       "geofenceAlert",
-      handleNewAlert
+      handleGeofenceAlert
     );
 
 
-    // Listen for resolved alerts
-    socket.on(
-      "geofenceResolved",
-      handleResolvedAlert
-    );
-
-
-    // Cleanup
     return () => {
 
       socket.off(
         "geofenceAlert",
-        handleNewAlert
-      );
-
-      socket.off(
-        "geofenceResolved",
-        handleResolvedAlert
+        handleGeofenceAlert
       );
 
     };
@@ -105,12 +137,22 @@ const AlertPanel = () => {
         }}
       >
 
-        <h2>
-          🚨 Alerts
+        <h2 className="text-white text-xl font-semibold">
+
+          🚨 Recent Alerts
+
         </h2>
 
-        <span>
+
+        <span
+          style={{
+            color: "#ef4444",
+            fontWeight: "600"
+          }}
+        >
+
           {alerts.length} Alerts
+
         </span>
 
       </div>
@@ -129,75 +171,81 @@ const AlertPanel = () => {
               color: "#94a3b8"
             }}
           >
-            No alerts yet
+
+            No active alerts
+
           </p>
 
         ) : (
 
-          alerts.map((alert) => (
+          alerts.map(
+            (alert, index) => (
 
-            <div
-              key={alert._id}
-              style={{
-                display: "flex",
-                gap: "15px",
-                padding: "15px",
-                marginBottom: "12px",
-                background: "#0f172a",
-                borderRadius: "12px"
-              }}
-            >
-
-              <AlertTriangle
-                color={
-                  alert.resolved
-                    ? "#22c55e"
-                    : "#ef4444"
+              <div
+                key={
+                  alert._id || index
                 }
-              />
+
+                style={{
+                  display: "flex",
+                  gap: "15px",
+                  padding: "15px",
+                  marginBottom: "12px",
+                  background: "#0f172a",
+                  borderRadius: "12px",
+                  border: "1px solid #374151"
+                }}
+              >
+
+                <AlertTriangle
+                  color="#ef4444"
+                  size={25}
+                />
 
 
-              <div>
+                <div>
 
-                <h4>
-                  {alert.type}
-                </h4>
+                  <h4
+                    className="text-white"
+                  >
 
+                    {alert.type}
 
-                <p
-                  style={{
-                    color: "#94a3b8"
-                  }}
-                >
-                  {alert.message}
-                </p>
+                  </h4>
 
 
-                <small>
-                  {new Date(
-                    alert.createdAt
-                  ).toLocaleTimeString()}
-                </small>
+                  <p
+                    style={{
+                      color: "#94a3b8",
+                      marginTop: "5px"
+                    }}
+                  >
+
+                    {alert.message}
+
+                  </p>
 
 
-                <div
-                  style={{
-                    marginTop: "5px",
-                    color: alert.resolved
-                      ? "#22c55e"
-                      : "#ef4444"
-                  }}
-                >
-                  {alert.resolved
-                    ? "RESOLVED"
-                    : "ACTIVE"}
+                  <small
+                    style={{
+                      color: "#64748b"
+                    }}
+                  >
+
+                    {alert.createdAt
+                      ? new Date(
+                          alert.createdAt
+                        ).toLocaleTimeString()
+                      : "Just now"}
+
+                  </small>
+
                 </div>
 
               </div>
 
-            </div>
-
-          ))
+            )
+          )
 
         )}
 

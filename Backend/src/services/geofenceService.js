@@ -10,14 +10,11 @@ export const checkGeofence = (vehiclePoint, zone) => {
 
   const polygon = turf.polygon([zone]);
 
-  return turf.booleanPointInPolygon(
-    point,
-    polygon
-  );
+  return turf.booleanPointInPolygon(point, polygon);
 };
 
 
-// Handle geofence state
+// Create geofence alert
 export const createGeofenceAlert = async (vehicle, zone) => {
 
   const inside = checkGeofence(
@@ -28,48 +25,41 @@ export const createGeofenceAlert = async (vehicle, zone) => {
     zone
   );
 
-
-  // ==========================================
-  // VEHICLE IS INSIDE THE ZONE
-  // ==========================================
+  // =====================================
+  // VEHICLE IS INSIDE
+  // =====================================
 
   if (inside) {
 
-    // Find active geofence alert
-    const activeAlert = await Alert.findOne({
-      vehicleId: vehicle._id,
-      type: "GEOFENCE_BREACH",
-      resolved: false
-    });
+    // If vehicle came back inside,
+    // resolve its previous active alert
 
+    await Alert.findOneAndUpdate(
+      {
+        vehicleId: vehicle._id,
+        type: "GEOFENCE_BREACH",
+        resolved: false
+      },
+      {
+        resolved: true
+      }
+    );
 
-    // If an active alert exists,
-    // resolve it because vehicle came back
-    if (activeAlert) {
-
-      activeAlert.resolved = true;
-
-      await activeAlert.save();
-
-      console.log(
-        `✅ Geofence alert resolved for ${vehicle.vehicleId}`
-      );
-
-      return {
-        resolved: true,
-        alert: activeAlert
-      };
-    }
-
-
-    // No active alert
     return null;
   }
 
 
-  // ==========================================
-  // VEHICLE IS OUTSIDE THE ZONE
-  // ==========================================
+  // =====================================
+  // VEHICLE IS OUTSIDE
+  // =====================================
+
+  console.log(
+    "🚨 Vehicle is OUTSIDE:",
+    vehicle.vehicleId
+  );
+
+
+  // Check if an active alert already exists
 
   const existingAlert = await Alert.findOne({
     vehicleId: vehicle._id,
@@ -78,15 +68,20 @@ export const createGeofenceAlert = async (vehicle, zone) => {
   });
 
 
-  // Already has an active alert
   if (existingAlert) {
+
+    console.log(
+      "⚠️ Alert already exists for:",
+      vehicle.vehicleId
+    );
+
     return null;
   }
 
 
-  // ==========================================
+  // =====================================
   // CREATE NEW ALERT
-  // ==========================================
+  // =====================================
 
   const alert = await Alert.create({
 
@@ -103,12 +98,10 @@ export const createGeofenceAlert = async (vehicle, zone) => {
 
 
   console.log(
-    `🚨 Geofence alert created for ${vehicle.vehicleId}`
+    "🚨 NEW GEOFENCE ALERT CREATED:",
+    vehicle.vehicleId
   );
 
 
-  return {
-    resolved: false,
-    alert
-  };
+  return alert;
 };
