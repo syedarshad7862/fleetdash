@@ -22,17 +22,11 @@ export const startVehicleSimulation = () => {
 
       const vehicles = await Vehicle.find();
 
-      console.log(
-        "🚚 Vehicles found:",
-        vehicles.length
-      );
+      console.log("🚚 Vehicles found:", vehicles.length);
 
       for (const vehicle of vehicles) {
 
-        console.log(
-          "📍 Processing:",
-          vehicle.vehicleId
-        );
+        console.log("📍 Processing:", vehicle.vehicleId);
 
         const newLat =
           vehicle.location.latitude +
@@ -66,26 +60,56 @@ export const startVehicleSimulation = () => {
           updatedVehicle
         );
 
-        const result =
-          await createGeofenceAlert(
-            updatedVehicle,
-            zone
-          );
+       const result = await createGeofenceAlert(
+  updatedVehicle,
+  zone
+);
 
-        if (result?.alert) {
+if (result?.alert) {
+
+  console.log(
+    "🚨 GEOFENCE ALERT:",
+    result.alert.message
+  );
+
+  io.emit(
+    "geofenceAlert",
+    result.alert
+  );
+
+}
+
+if (result?.resolved) {
+
+  console.log(
+    "✅ GEOFENCE ALERT RESOLVED:",
+    updatedVehicle.vehicleId
+  );
+
+  io.emit(
+    "geofenceResolved",
+    {
+      vehicleId: updatedVehicle._id
+    }
+  );
+
+}
+
+        // RESOLVED ALERT
+        if (result?.resolved) {
 
           console.log(
-            "🚨 GEOFENCE ALERT:",
-            result.alert.message
+            "✅ SENDING GEOFENCE RESOLVED:",
+            updatedVehicle.vehicleId
           );
 
           io.emit(
-            "geofenceAlert",
-            result.alert
+            "geofenceResolved",
+            {
+              vehicleId: String(updatedVehicle._id)
+            }
           );
-
         }
-
       }
 
     } catch (err) {
@@ -98,5 +122,4 @@ export const startVehicleSimulation = () => {
     }
 
   }, 3000);
-
 };

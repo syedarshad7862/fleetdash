@@ -14,7 +14,7 @@ export const checkGeofence = (vehiclePoint, zone) => {
 };
 
 
-// Create geofence alert
+// Geofence logic
 export const createGeofenceAlert = async (vehicle, zone) => {
 
   const inside = checkGeofence(
@@ -25,25 +25,43 @@ export const createGeofenceAlert = async (vehicle, zone) => {
     zone
   );
 
+  console.log(
+    `🔍 ${vehicle.vehicleId} inside zone:`,
+    inside
+  );
+
+
   // =====================================
   // VEHICLE IS INSIDE
   // =====================================
 
   if (inside) {
 
-    // If vehicle came back inside,
-    // resolve its previous active alert
-
-    await Alert.findOneAndUpdate(
+    // Resolve ALL active alerts for this vehicle
+    const result = await Alert.updateMany(
       {
         vehicleId: vehicle._id,
         type: "GEOFENCE_BREACH",
         resolved: false
       },
       {
-        resolved: true
+        $set: {
+          resolved: true
+        }
       }
     );
+
+    if (result.modifiedCount > 0) {
+
+      console.log(
+        `✅ Resolved ${result.modifiedCount} alert(s) for ${vehicle.vehicleId}`
+      );
+
+      return {
+        resolved: true,
+        vehicleId: vehicle._id
+      };
+    }
 
     return null;
   }
@@ -60,7 +78,6 @@ export const createGeofenceAlert = async (vehicle, zone) => {
 
 
   // Check if an active alert already exists
-
   const existingAlert = await Alert.findOne({
     vehicleId: vehicle._id,
     type: "GEOFENCE_BREACH",
@@ -98,10 +115,13 @@ export const createGeofenceAlert = async (vehicle, zone) => {
 
 
   console.log(
-    "🚨 NEW GEOFENCE ALERT CREATED:",
+    "🚨 NEW ALERT CREATED:",
     vehicle.vehicleId
   );
 
 
-  return alert;
+  return {
+    alert,
+    resolved: false
+  };
 };
